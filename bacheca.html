@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bacheca e FAQ - Sportello Cittadino</title>
+    
+    <style>
+        /* Stili ad alta leggibilità, identici al resto dell'app */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            font-size: 22px; 
+        }
+        
+        header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
+        main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        
+        /* Bottone per tornare alla home */
+        .btn-indietro {
+            background-color: #6c757d;
+            color: white;
+            font-size: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        /* Stile per gli avvisi della bacheca (Bordi gialli per catturare l'attenzione) */
+        .avviso {
+            background-color: #fff9e6;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 8px solid #ffc107;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Stile per le Domande Frequenti (FAQ) */
+        .faq {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .domanda {
+            font-weight: bold;
+            color: #004080;
+            margin-top: 0;
+        }
+
+        .risposta {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Bacheca e Avvisi</h1>
+        <p>Notizie dal Comune e Risposte ai tuoi dubbi</p>
+    </header>
+
+    <main>
+        <!-- Bottone per tornare indietro -->
+        <a href="index.html" class="btn-indietro">⬅️ Torna alla Home</a>
+        
+        <h2>📌 Avvisi Importanti</h2>
+        
+        <div class="avviso">
+            <h3>Lavori in Corso: Via Roma</h3>
+            <p><strong>Data:</strong> 15 Ottobre - 20 Ottobre</p>
+            <p>Attenzione: Via Roma sarà chiusa al traffico per rifacimento del manto stradale. Si prega di utilizzare percorsi alternativi.</p>
+        </div>
+
+        <div class="avviso">
+            <h3>Ritiro Rifiuti Ingombranti</h3>
+            <p><strong>Avviso:</strong> Il servizio di ritiro a domicilio è attivo tutti i giovedì. Prenotare chiamando il numero verde del Comune.</p>
+        </div>
+
+        <hr style="border: 1px solid #ccc; margin: 40px 0;">
+
+        <h2>❓ Domande Frequenti (FAQ)</h2>
+
+        <div class="faq">
+            <p class="domanda">Come funziona questa piattaforma?</p>
+            <p class="risposta">Puoi inviare segnalazioni su problemi in città (es. buche, lampioni spenti) direttamente dal tuo telefono, aggiungendo anche una foto e la posizione GPS automatica.</p>
+        </div>
+
+        <div class="faq">
+            <p class="domanda">Posso fare una segnalazione per un mio vicino anziano?</p>
+            <p class="risposta">Certamente! Abbiamo inserito un'apposita casella da spuntare nel modulo per indicare che stai aiutando una persona con difficoltà.</p>
+        </div>
+
+        <div class="faq">
+            <p class="domanda">Come so se il mio problema è stato risolto?</p>
+            <p class="risposta">Puoi controllare in qualsiasi momento cliccando sul pulsante "Controlla le tue Segnalazioni" nella pagina principale.</p>
+        </div>
+    </main>
+
+</body>
+</html>
