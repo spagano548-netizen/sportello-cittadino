@@ -20,32 +20,43 @@
         main { padding: 20px; max-width: 800px; margin: 0 auto; }
         
         .nav-menu {
-            display: flex;
-            flex-direction: column; 
-            gap: 15px; 
-            margin-bottom: 30px;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #ccc;
+            display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
+            background-color: #ffffff; padding: 20px; border-radius: 10px; border: 2px solid #ccc;
         }
 
         .btn-nav {
-            background-color: #e9ecef;
-            color: #004080; 
-            font-size: 22px;
-            font-weight: bold;
-            padding: 15px;
-            text-align: center;
-            text-decoration: none; 
-            border: 2px solid #004080;
-            border-radius: 8px;
-            display: block;
+            background-color: #e9ecef; color: #004080; font-size: 22px; font-weight: bold;
+            padding: 15px; text-align: center; text-decoration: none; border: 2px solid #004080;
+            border-radius: 8px; display: block;
         }
 
         .modulo-segnalazione { background-color: #ffffff; padding: 30px; border-radius: 10px; border: 2px solid #004080; }
         label { display: block; margin-top: 20px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 15px; margin-top: 10px; font-size: 20px; border: 2px solid #666; border-radius: 5px; box-sizing: border-box; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 15px; margin-top: 10px; font-size: 20px; 
+            border: 2px solid #666; border-radius: 5px; box-sizing: border-box; 
+        }
+
+        /* NUOVO: Stile per il pulsante del microfono */
+        .area-testo-con-voce {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .btn-microfono {
+            background-color: #ffc107; /* Giallo per catturare l'attenzione */
+            color: #000;
+            font-size: 30px;
+            padding: 15px;
+            margin-top: 10px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            flex-shrink: 0; /* Evita che il pulsante si rimpicciolisca */
+        }
+
         .btn-azione { background-color: #0056b3; color: white; font-size: 20px; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; }
         .btn-invia { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; padding: 20px; border: none; border-radius: 8px; width: 100%; margin-top: 30px; cursor: pointer; }
     </style>
@@ -58,7 +69,6 @@
     </header>
 
     <main>
-        <!-- Menu di navigazione AGGIORNATO con il nuovo pulsante per la Bacheca -->
         <div class="nav-menu">
             <a href="bacheca.html" class="btn-nav">📌 Bacheca, Avvisi e FAQ</a>
             <a href="miei-ticket.html" class="btn-nav">📋 Controlla le tue Segnalazioni</a>
@@ -77,8 +87,12 @@
                 <option value="Altro">Altro problema</option>
             </select>
 
-            <label for="descrizione">2. Descrivi il problema in breve:</label>
-            <textarea id="descrizione" rows="4" placeholder="Scrivi qui..."></textarea>
+            <label for="descrizione">2. Descrivi il problema (puoi scriverlo o dettarlo a voce):</label>
+            <!-- NUOVO: Riquadro che contiene il testo e il microfono -->
+            <div class="area-testo-con-voce">
+                <textarea id="descrizione" rows="4" placeholder="Scrivi qui..."></textarea>
+                <button type="button" class="btn-microfono" onclick="avviaDettatura()" title="Dici a voce">🎙️</button>
+            </div>
 
             <label for="foto">3. Carica una foto (se ce l'hai):</label>
             <input type="file" id="foto" accept="image/*">
@@ -97,6 +111,44 @@
     </main>
 
     <script>
+        // NUOVA FUNZIONE: Dettatura Vocale
+        function avviaDettatura() {
+            // Controlla se il browser supporta il microfono
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Il tuo telefono o PC non supporta questa funzione. Prova a usare Chrome o Safari.");
+                return;
+            }
+            
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            var riconoscimento = new SpeechRecognition();
+            
+            riconoscimento.lang = 'it-IT'; // Impostiamo la lingua italiana
+            
+            // Quando inizia ad ascoltare
+            riconoscimento.onstart = function() {
+                var areaTesto = document.getElementById("descrizione");
+                areaTesto.placeholder = "Ti sto ascoltando... Parla ora!";
+            };
+            
+            // Quando ha finito di ascoltare e ha capito le parole
+            riconoscimento.onresult = function(event) {
+                var testoVocale = event.results[0][0].transcript;
+                var areaTesto = document.getElementById("descrizione");
+                // Aggiunge lo spazio e il testo detto a voce
+                areaTesto.value += (areaTesto.value ? " " : "") + testoVocale;
+                areaTesto.placeholder = "Scrivi qui...";
+            };
+            
+            // In caso di errore
+            riconoscimento.onerror = function(event) {
+                alert("Non ho sentito bene, puoi riprovare?");
+                document.getElementById("descrizione").placeholder = "Scrivi qui...";
+            };
+            
+            // Accende il microfono
+            riconoscimento.start();
+        }
+
         function trovaPosizione() {
             var casellaRisultato = document.getElementById("risultato-gps");
             casellaRisultato.value = "Ricerca in corso... attendi.";
