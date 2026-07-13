@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Comune - Sportello Cittadino</title>
+    
+    <style>
+        /* Stili ad alto contrasto per i dipendenti comunali */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9ecef; /* Sfondo leggermente più scuro per distinguere l'area privata */
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            font-size: 20px; 
+        }
+        
+        header { 
+            background-color: #343a40; /* Grigio scuro per la dashboard */
+            color: #ffffff; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        
+        main { 
+            padding: 20px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+        }
+
+        /* Stile per le "schede" di ogni singola segnalazione */
+        .ticket {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 8px solid #007BFF; /* Bordo blu per evidenziare il ticket */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .ticket h3 {
+            margin-top: 0;
+            color: #004080;
+        }
+
+        /* Testo evidenziato per le informazioni importanti */
+        .info-etichetta {
+            font-weight: bold;
+            color: #444;
+        }
+
+        /* Menu a tendina per cambiare lo stato della segnalazione */
+        select {
+            font-size: 18px;
+            padding: 10px;
+            margin-top: 15px;
+            border: 2px solid #343a40;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Area Riservata Comune</h1>
+        <p>Gestione Segnalazioni Cittadini</p>
+    </header>
+
+    <main>
+        <h2>Ticket Ricevuti</h2>
+        
+        <!-- Qui appariranno automaticamente i ticket grazie a JavaScript -->
+        <div id="lista-segnalazioni">
+            <p>Caricamento segnalazioni in corso...</p>
+        </div>
+    </main>
+
+    <script>
+        // Questa funzione si attiva appena la pagina viene aperta
+        function caricaSegnalazioni() {
+            var contenitore = document.getElementById("lista-segnalazioni");
+            
+            // Peschiamo i dati dal nostro "cassetto segreto" (database locale)
+            var database = JSON.parse(localStorage.getItem("segnalazioniComune")) || [];
+
+            // Se non ci sono ticket, mostriamo un messaggio
+            if (database.length === 0) {
+                contenitore.innerHTML = "<p>Nessuna segnalazione ricevuta al momento. Ottimo lavoro!</p>";
+                return;
+            }
+
+            // Altrimenti, svuotiamo il testo di caricamento e prepariamoci a mostrare i ticket
+            contenitore.innerHTML = "";
+
+            // Passiamo in rassegna ogni singolo ticket salvato
+            // Usiamo 'reverse()' per mostrare i più recenti in alto
+            database.reverse().forEach(function(ticket, indiceOriginale) {
+                
+                // Ricaviamo l'indice vero per poter aggiornare il dato corretto
+                var indiceReale = database.length - 1 - indiceOriginale;
+                
+                // Creiamo una scritta rossa se la segnalazione è per un anziano
+                var avvisoAnziano = "";
+                if(ticket.contoTerzi === true) {
+                    avvisoAnziano = "<p style='color: #d9534f; font-weight: bold;'>⚠️ Segnalazione per conto di persona anziana o con disabilità</p>";
+                }
+
+                // Disegniamo la "scheda" del ticket (HTML dinamico)
+                var htmlTicket = `
+                    <div class="ticket">
+                        <h3>Categoria: ${ticket.categoria}</h3>
+                        ${avvisoAnziano}
+                        <p><span class="info-etichetta">Data:</span> ${ticket.data}</p>
+                        <p><span class="info-etichetta">Descrizione:</span> ${ticket.descrizione}</p>
+                        <p><span class="info-etichetta">Posizione GPS:</span> ${ticket.gps}</p>
+                        
+                        <label for="stato-${indiceReale}" class="info-etichetta">Stato Attuale:</label>
+                        <select id="stato-${indiceReale}" onchange="cambiaStato(${indiceReale}, this.value)">
+                            <option value="In attesa" ${ticket.stato === 'In attesa' ? 'selected' : ''}>🟠 In attesa di lettura</option>
+                            <option value="In lavorazione" ${ticket.stato === 'In lavorazione' ? 'selected' : ''}>🔵 In lavorazione</option>
+                            <option value="Risolto" ${ticket.stato === 'Risolto' ? 'selected' : ''}>🟢 Risolto</option>
+                        </select>
+                    </div>
+                `;
+                
+                // Aggiungiamo la scheda alla pagina
+                contenitore.innerHTML += htmlTicket;
+            });
+        }
+
+        // Funzione per aggiornare lo stato quando il dipendente usa il menu a tendina
+        function cambiaStato(indice, nuovoStato) {
+            var database = JSON.parse(localStorage.getItem("segnalazioniComune"));
+            database[indice].stato = nuovoStato;
+            localStorage.setItem("segnalazioniComune", JSON.stringify(database));
+            alert("Stato della segnalazione aggiornato con successo!");
+        }
+
+        // Avviamo il caricamento appena si apre la pagina
+        caricaSegnalazioni();
+    </script>
+
+</body>
+</html>
