@@ -19,11 +19,10 @@
         header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
         main { padding: 20px; max-width: 800px; margin: 0 auto; }
         
-        /* NUOVO: Stile per il menu di navigazione */
         .nav-menu {
             display: flex;
-            flex-direction: column; /* Mette i pulsanti uno sotto l'altro sul telefono */
-            gap: 15px; /* Spazio tra un pulsante e l'altro */
+            flex-direction: column; 
+            gap: 15px; 
             margin-bottom: 30px;
             background-color: #ffffff;
             padding: 20px;
@@ -31,15 +30,14 @@
             border: 2px solid #ccc;
         }
 
-        /* NUOVO: Stile dei pulsanti del menu */
         .btn-nav {
             background-color: #e9ecef;
-            color: #004080; /* Testo blu scuro ad alto contrasto */
+            color: #004080; 
             font-size: 22px;
             font-weight: bold;
             padding: 15px;
             text-align: center;
-            text-decoration: none; /* Toglie la fastidiosa sottolineatura blu dei link */
+            text-decoration: none; 
             border: 2px solid #004080;
             border-radius: 8px;
             display: block;
@@ -60,11 +58,10 @@
     </header>
 
     <main>
-        <!-- NUOVO: Il nostro menu di navigazione con i pulsanti giganti -->
+        <!-- Menu di navigazione AGGIORNATO con il nuovo pulsante per la Bacheca -->
         <div class="nav-menu">
+            <a href="bacheca.html" class="btn-nav">📌 Bacheca, Avvisi e FAQ</a>
             <a href="miei-ticket.html" class="btn-nav">📋 Controlla le tue Segnalazioni</a>
-            
-            <!-- Questo pulsante lo facciamo rosso per far capire che è un'area speciale -->
             <a href="dashboard.html" class="btn-nav" style="border-color: #d9534f; color: #d9534f;">🏢 Area Comune (Dashboard)</a>
         </div>
 
