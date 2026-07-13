@@ -6,7 +6,6 @@
     <title>Sportello Cittadino</title>
     
     <style>
-        /* Stili di base ad alta leggibilità */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -15,23 +14,19 @@
             padding: 0;
             font-size: 22px; 
         }
-        
         header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
         main { padding: 20px; max-width: 800px; margin: 0 auto; }
         .modulo-segnalazione { background-color: #ffffff; padding: 30px; border-radius: 10px; border: 2px solid #004080; }
         label { display: block; margin-top: 20px; font-weight: bold; }
         
-        /* Campi di testo molto grandi */
         input, select, textarea {
             width: 100%; padding: 15px; margin-top: 10px; font-size: 20px; border: 2px solid #666; border-radius: 5px; box-sizing: border-box; 
         }
 
-        /* Pulsante blu per azioni intermedie (come il GPS) */
         .btn-azione {
             background-color: #0056b3; color: white; font-size: 20px; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer;
         }
 
-        /* Pulsante verde gigante per l'invio finale */
         .btn-invia {
             background-color: #28a745; color: white; font-size: 24px; font-weight: bold; padding: 20px; border: none; border-radius: 8px; width: 100%; margin-top: 30px; cursor: pointer;
         }
@@ -50,11 +45,11 @@
         <div class="modulo-segnalazione">
             <label for="categoria">1. Cosa vuoi segnalare?</label>
             <select id="categoria">
-                <option value="strade">Buca in strada o marciapiede rovinato</option>
-                <option value="rifiuti">Rifiuti abbandonati</option>
-                <option value="illuminazione">Lampione spento</option>
-                <option value="verde">Erba alta o alberi pericolanti</option>
-                <option value="altro">Altro problema</option>
+                <option value="Strade">Buca in strada o marciapiede rovinato</option>
+                <option value="Rifiuti">Rifiuti abbandonati</option>
+                <option value="Illuminazione">Lampione spento</option>
+                <option value="Verde">Erba alta o alberi pericolanti</option>
+                <option value="Altro">Altro problema</option>
             </select>
 
             <label for="descrizione">2. Descrivi il problema in breve:</label>
@@ -63,46 +58,77 @@
             <label for="foto">3. Carica una foto (se ce l'hai):</label>
             <input type="file" id="foto" accept="image/*">
 
-            <!-- NUOVA SEZIONE: GPS -->
             <label>4. Posizione esatta (GPS):</label>
             <button type="button" class="btn-azione" onclick="trovaPosizione()">📍 Trova la mia posizione</button>
-            <!-- In questa casella appariranno le coordinate o i messaggi per l'utente, non può scriverci dentro (readonly) -->
             <input type="text" id="risultato-gps" placeholder="Nessuna posizione rilevata" readonly>
 
-            <!-- Aggiunta opzione "Segnala per conto di terzi" -->
             <label style="margin-top: 30px; background-color: #e9ecef; padding: 15px; border-radius: 5px;">
                 <input type="checkbox" id="conto-terzi" style="width: 30px; height: 30px; vertical-align: middle; margin: 0 10px 0 0;">
                 Sto inviando questa segnalazione per conto di una persona anziana o con disabilità.
             </label>
 
-            <button type="button" class="btn-invia">Invia Segnalazione</button>
+            <!-- Ho aggiunto 'onclick="salvaSegnalazione()"' per attivare il salvataggio! -->
+            <button type="button" class="btn-invia" onclick="salvaSegnalazione()">Invia Segnalazione</button>
         </div>
     </main>
 
-    <!-- INIZIO DELLA MAGIA: Il codice Javascript per far funzionare il GPS -->
     <script>
+        // Funzione per il GPS
         function trovaPosizione() {
             var casellaRisultato = document.getElementById("risultato-gps");
             casellaRisultato.value = "Ricerca in corso... attendi.";
 
-            // Controlla se il dispositivo ha un sensore GPS
             if (navigator.geolocation) {
-                // Chiede all'utente il permesso di usare la posizione
                 navigator.geolocation.getCurrentPosition(
                     function(posizione) {
-                        // Se l'utente dice SI, salviamo latitudine e longitudine
-                        var lat = posizione.coords.latitude;
-                        var lon = posizione.coords.longitude;
-                        casellaRisultato.value = "Trovata! Lat: " + lat + ", Lon: " + lon;
+                        casellaRisultato.value = "Lat: " + posizione.coords.latitude + ", Lon: " + posizione.coords.longitude;
                     }, 
                     function(errore) {
-                        // Se c'è un errore o l'utente dice NO al permesso
-                        casellaRisultato.value = "Impossibile trovare la posizione. Hai dato il permesso?";
+                        casellaRisultato.value = "Permesso negato o posizione non trovata.";
                     }
                 );
             } else {
                 casellaRisultato.value = "Il tuo dispositivo non supporta il GPS.";
             }
+        }
+
+        // NUOVA FUNZIONE: Salva i dati e crea il ticket
+        function salvaSegnalazione() {
+            var categoria = document.getElementById("categoria").value;
+            var descrizione = document.getElementById("descrizione").value;
+            var gps = document.getElementById("risultato-gps").value;
+            var contoTerzi = document.getElementById("conto-terzi").checked;
+            
+            // Controllo: assicuriamoci che l'utente abbia scritto qualcosa
+            if (descrizione.trim() === "") {
+                alert("Per favore, descrivi brevemente il problema prima di inviare.");
+                return;
+            }
+
+            // Creiamo il "pacchetto" con tutte le informazioni del ticket
+            var nuovoTicket = {
+                id: Date.now(), // Crea un numero unico per la segnalazione
+                data: new Date().toLocaleDateString("it-IT"), // Salva la data di oggi
+                categoria: categoria,
+                descrizione: descrizione,
+                gps: gps,
+                contoTerzi: contoTerzi,
+                stato: "In attesa" // Impostiamo lo stato iniziale
+            };
+
+            // Apriamo il nostro database locale, aggiungiamo il ticket e richiudiamo
+            var database = JSON.parse(localStorage.getItem("segnalazioniComune")) || [];
+            database.push(nuovoTicket);
+            localStorage.setItem("segnalazioniComune", JSON.stringify(database));
+
+            // Avvisiamo il cittadino che è andato tutto a buon fine
+            alert("✅ Segnalazione inviata con successo! Grazie per aver aiutato il tuo Comune.");
+            
+            // Svuotiamo il modulo per la prossima segnalazione
+            document.getElementById("descrizione").value = "";
+            document.getElementById("risultato-gps").value = "";
+            document.getElementById("foto").value = "";
+            document.getElementById("conto-terzi").checked = false;
         }
     </script>
 </body>
