@@ -13,60 +13,27 @@
             color: #1a1a1a;
             margin: 0;
             padding: 0;
-            font-size: 22px; /* Testo ancora più grande e leggibile */
+            font-size: 22px; 
         }
         
-        header {
-            background-color: #004080;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-        }
+        header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
+        main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .modulo-segnalazione { background-color: #ffffff; padding: 30px; border-radius: 10px; border: 2px solid #004080; }
+        label { display: block; margin-top: 20px; font-weight: bold; }
         
-        main {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        /* Stile per il riquadro del modulo (form) */
-        .modulo-segnalazione {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px; /* Bordi arrotondati */
-            border: 2px solid #004080; /* Bordo blu evidente per far capire dove ci si trova */
-        }
-
-        /* Etichette delle domande */
-        label {
-            display: block; 
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        /* Campi di testo molto grandi e facili da toccare col dito sul telefono */
+        /* Campi di testo molto grandi */
         input, select, textarea {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            font-size: 20px;
-            border: 2px solid #666; /* Bordo scuro per alto contrasto */
-            border-radius: 5px;
-            box-sizing: border-box; 
+            width: 100%; padding: 15px; margin-top: 10px; font-size: 20px; border: 2px solid #666; border-radius: 5px; box-sizing: border-box; 
         }
 
-        /* Pulsante gigante e ben visibile */
-        button {
-            background-color: #007BFF;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 20px;
-            border: none;
-            border-radius: 8px;
-            width: 100%;
-            margin-top: 30px;
-            cursor: pointer;
+        /* Pulsante blu per azioni intermedie (come il GPS) */
+        .btn-azione {
+            background-color: #0056b3; color: white; font-size: 20px; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer;
+        }
+
+        /* Pulsante verde gigante per l'invio finale */
+        .btn-invia {
+            background-color: #28a745; color: white; font-size: 24px; font-weight: bold; padding: 20px; border: none; border-radius: 8px; width: 100%; margin-top: 30px; cursor: pointer;
         }
     </style>
 </head>
@@ -79,7 +46,6 @@
 
     <main>
         <h2>Invia una nuova segnalazione</h2>
-        <p>Compila i campi qui sotto. Le scritte sono grandi per aiutarti a leggere meglio.</p>
         
         <div class="modulo-segnalazione">
             <label for="categoria">1. Cosa vuoi segnalare?</label>
@@ -97,10 +63,47 @@
             <label for="foto">3. Carica una foto (se ce l'hai):</label>
             <input type="file" id="foto" accept="image/*">
 
-            <!-- Pulsante che per ora è solo grafico, lo faremo funzionare tra poco! -->
-            <button type="button">Invia Segnalazione</button>
+            <!-- NUOVA SEZIONE: GPS -->
+            <label>4. Posizione esatta (GPS):</label>
+            <button type="button" class="btn-azione" onclick="trovaPosizione()">📍 Trova la mia posizione</button>
+            <!-- In questa casella appariranno le coordinate o i messaggi per l'utente, non può scriverci dentro (readonly) -->
+            <input type="text" id="risultato-gps" placeholder="Nessuna posizione rilevata" readonly>
+
+            <!-- Aggiunta opzione "Segnala per conto di terzi" -->
+            <label style="margin-top: 30px; background-color: #e9ecef; padding: 15px; border-radius: 5px;">
+                <input type="checkbox" id="conto-terzi" style="width: 30px; height: 30px; vertical-align: middle; margin: 0 10px 0 0;">
+                Sto inviando questa segnalazione per conto di una persona anziana o con disabilità.
+            </label>
+
+            <button type="button" class="btn-invia">Invia Segnalazione</button>
         </div>
     </main>
 
+    <!-- INIZIO DELLA MAGIA: Il codice Javascript per far funzionare il GPS -->
+    <script>
+        function trovaPosizione() {
+            var casellaRisultato = document.getElementById("risultato-gps");
+            casellaRisultato.value = "Ricerca in corso... attendi.";
+
+            // Controlla se il dispositivo ha un sensore GPS
+            if (navigator.geolocation) {
+                // Chiede all'utente il permesso di usare la posizione
+                navigator.geolocation.getCurrentPosition(
+                    function(posizione) {
+                        // Se l'utente dice SI, salviamo latitudine e longitudine
+                        var lat = posizione.coords.latitude;
+                        var lon = posizione.coords.longitude;
+                        casellaRisultato.value = "Trovata! Lat: " + lat + ", Lon: " + lon;
+                    }, 
+                    function(errore) {
+                        // Se c'è un errore o l'utente dice NO al permesso
+                        casellaRisultato.value = "Impossibile trovare la posizione. Hai dato il permesso?";
+                    }
+                );
+            } else {
+                casellaRisultato.value = "Il tuo dispositivo non supporta il GPS.";
+            }
+        }
+    </script>
 </body>
 </html>
