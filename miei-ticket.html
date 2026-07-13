@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Mie Segnalazioni - Sportello Cittadino</title>
+    
+    <style>
+        /* Stili ad alta leggibilità, identici alla pagina principale */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            font-size: 22px; 
+        }
+        
+        header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
+        main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        
+        /* Stile del bottone per tornare indietro */
+        .btn-indietro {
+            background-color: #6c757d;
+            color: white;
+            font-size: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none; /* Toglie la sottolineatura al link */
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        /* Stile della "scheda" che mostra la segnalazione al cittadino */
+        .scheda-ticket {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #ccc; /* Bordo grigio chiaro */
+        }
+
+        /* Colori per i diversi stati della segnalazione */
+        .stato-attesa { color: #d9534f; font-weight: bold; } /* Rosso per "In attesa" */
+        .stato-lavorazione { color: #0275d8; font-weight: bold; } /* Blu per "In lavorazione" */
+        .stato-risolto { color: #5cb85c; font-weight: bold; } /* Verde per "Risolto" */
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Le Mie Segnalazioni</h1>
+        <p>Controlla lo stato delle tue richieste</p>
+    </header>
+
+    <main>
+        <!-- Bottone per tornare alla pagina di invio -->
+        <a href="index.html" class="btn-indietro">⬅️ Torna alla Home</a>
+        
+        <h2>Elenco Segnalazioni Inviate</h2>
+        
+        <!-- Qui appariranno le segnalazioni del cittadino -->
+        <div id="lista-miei-ticket">
+            <p>Caricamento in corso...</p>
+        </div>
+    </main>
+
+    <script>
+        function caricaMieiTicket() {
+            var contenitore = document.getElementById("lista-miei-ticket");
+            
+            // Peschiamo i dati dal nostro database locale
+            var database = JSON.parse(localStorage.getItem("segnalazioniComune")) || [];
+
+            // Se non ci sono ticket inviati
+            if (database.length === 0) {
+                contenitore.innerHTML = "<p>Non hai ancora inviato nessuna segnalazione.</p>";
+                return;
+            }
+
+            // Svuotiamo il testo di caricamento
+            contenitore.innerHTML = "";
+
+            // Mostriamo i ticket dal più recente al più vecchio
+            database.reverse().forEach(function(ticket) {
+                
+                // Scegliamo il colore giusto in base allo stato
+                var classeStato = "";
+                if (ticket.stato === "In attesa") classeStato = "stato-attesa";
+                if (ticket.stato === "In lavorazione") classeStato = "stato-lavorazione";
+                if (ticket.stato === "Risolto") classeStato = "stato-risolto";
+
+                // Creiamo il codice HTML per mostrare la singola scheda
+                var htmlScheda = `
+                    <div class="scheda-ticket">
+                        <p><strong>Data invio:</strong> ${ticket.data}</p>
+                        <p><strong>Problema:</strong> ${ticket.categoria}</p>
+                        <p><strong>Stato attuale:</strong> <span class="${classeStato}">${ticket.stato}</span></p>
+                    </div>
+                `;
+                
+                contenitore.innerHTML += htmlScheda;
+            });
+        }
+
+        // Avviamo la funzione appena si apre la pagina
+        caricaMieiTicket();
+    </script>
+
+</body>
+</html>
