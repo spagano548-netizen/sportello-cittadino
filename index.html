@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sportello Cittadino - Home</title>
     
-    <!-- PWA: Rende il sito un'app installabile -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1006/1006674.png">
     
     <style>
-        /* Stili di base ad alta leggibilità */
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #1a1a1a; margin: 0; padding: 0; font-size: 22px; }
+        /* Stili di base */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #1a1a1a; margin: 0; padding: 0; font-size: 22px; transition: 0.3s; }
         header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
         main { padding: 20px; max-width: 800px; margin: 0 auto; }
         
@@ -25,9 +24,29 @@
         .btn-microfono { background-color: #ffc107; color: #000; font-size: 30px; padding: 15px; margin-top: 10px; border: 2px solid #333; border-radius: 8px; cursor: pointer; flex-shrink: 0; }
         .btn-azione { background-color: #0056b3; color: white; font-size: 20px; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; }
         .btn-invia { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; padding: 20px; border: none; border-radius: 8px; width: 100%; margin-top: 30px; cursor: pointer; }
+
+        /* INNOVAZIONE 2: Stili per la Barra di Accessibilità */
+        .barra-accessibilita { background-color: #e0e0e0; padding: 10px; text-align: right; }
+        .btn-access { font-size: 18px; padding: 10px 15px; margin-left: 10px; cursor: pointer; border: 2px solid #333; border-radius: 5px; font-weight: bold; background-color: #fff; }
+        
+        /* Modalità Super Contrasto */
+        .super-contrasto { background-color: #000000 !important; color: #ffff00 !important; }
+        .super-contrasto header { background-color: #1a1a1a !important; color: #ffff00 !important; border-bottom: 2px solid #ffff00; }
+        .super-contrasto .nav-menu, .super-contrasto .modulo-segnalazione { background-color: #1a1a1a !important; border: 2px solid #ffff00 !important; }
+        .super-contrasto .btn-nav, .super-contrasto input, .super-contrasto select, .super-contrasto textarea { background-color: #000000 !important; color: #ffff00 !important; border: 2px solid #ffff00 !important; }
+        
+        /* Modalità Testo Gigante */
+        .testo-gigante { font-size: 28px !important; }
+        .testo-gigante .btn-nav, .testo-gigante input, .testo-gigante select, .testo-gigante textarea, .testo-gigante .btn-access { font-size: 26px !important; }
     </style>
 </head>
 <body>
+
+    <!-- NUOVO: Barra degli strumenti per l'accessibilità -->
+    <div class="barra-accessibilita">
+        <button class="btn-access" onclick="attivaTestoGigante()">A+ Ingrandisci Testo</button>
+        <button class="btn-access" onclick="attivaAltoContrasto()">🌓 Alto Contrasto</button>
+    </div>
 
     <header>
         <h1>Sportello Cittadino</h1>
@@ -38,7 +57,7 @@
         <div class="nav-menu">
             <a href="bacheca.html" class="btn-nav">📌 Bacheca, Avvisi e FAQ</a>
             <a href="miei-ticket.html" class="btn-nav">📋 Controlla le tue Segnalazioni</a>
-            <a href="dashboard.html" class="btn-nav" style="border-color: #d9534f; color: #d9534f;">🏢 Area Comune (Dashboard)</a>
+            <a href="dashboard.html" class="btn-nav" style="border-color: #d9534f; color: #ffff00;">🏢 Area Comune (Dashboard)</a>
         </div>
 
         <h2>Invia una nuova segnalazione</h2>
@@ -66,7 +85,7 @@
             <button type="button" class="btn-azione" onclick="trovaPosizione()">📍 Trova la mia posizione</button>
             <input type="text" id="risultato-gps" placeholder="Nessuna posizione rilevata" readonly>
 
-            <label style="margin-top: 30px; background-color: #e9ecef; padding: 15px; border-radius: 5px;">
+            <label style="margin-top: 30px; background-color: #e9ecef; padding: 15px; border-radius: 5px;" id="box-anziani">
                 <input type="checkbox" id="conto-terzi" style="width: 30px; height: 30px; vertical-align: middle; margin: 0 10px 0 0;">
                 Sto inviando questa segnalazione per conto di una persona anziana o con disabilità.
             </label>
@@ -76,10 +95,26 @@
     </main>
 
     <script>
-        // Funzione per la dettatura vocale
+        // Funzioni per l'accessibilità
+        function attivaTestoGigante() {
+            document.body.classList.toggle('testo-gigante');
+        }
+
+        function attivaAltoContrasto() {
+            document.body.classList.toggle('super-contrasto');
+            // Gestione speciale del riquadro anziani per farlo vedere bene col contrasto
+            var box = document.getElementById("box-anziani");
+            if (document.body.classList.contains('super-contrasto')) {
+                box.style.backgroundColor = "#1a1a1a";
+            } else {
+                box.style.backgroundColor = "#e9ecef";
+            }
+        }
+
+        // Dettatura vocale
         function avviaDettatura() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Il tuo telefono o PC non supporta questa funzione. Prova a usare Chrome o Safari.");
+                alert("Il tuo dispositivo non supporta questa funzione.");
                 return;
             }
             var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -100,7 +135,7 @@
             riconoscimento.start();
         }
 
-        // INNOVAZIONE 1: GPS Intelligente con traduzione dell'indirizzo
+        // GPS Intelligente con traduzione dell'indirizzo
         function trovaPosizione() {
             var casellaRisultato = document.getElementById("risultato-gps");
             casellaRisultato.value = "Ricerca in corso... attendi.";
@@ -112,53 +147,35 @@
                         var lon = posizione.coords.longitude;
                         casellaRisultato.value = "Coordinate trovate, cerco la via esatta...";
 
-                        // Ci colleghiamo a un servizio di mappe gratuito per convertire le coordinate in via
                         var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon;
                         
                         fetch(url)
                             .then(response => response.json())
                             .then(data => {
                                 if (data && data.display_name) {
-                                    // Mostriamo l'indirizzo reale!
                                     casellaRisultato.value = data.display_name;
                                 } else {
                                     casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon;
                                 }
                             })
-                            .catch(errore => {
-                                // Se fallisce, mostriamo almeno i numeri
-                                casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon;
-                            });
+                            .catch(errore => { casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon; });
                     }, 
-                    function(errore) {
-                        casellaRisultato.value = "Permesso negato o posizione non trovata.";
-                    }
+                    function(errore) { casellaRisultato.value = "Permesso negato o posizione non trovata."; }
                 );
-            } else {
-                casellaRisultato.value = "Il tuo dispositivo non supporta il GPS.";
-            }
+            } else { casellaRisultato.value = "Il tuo dispositivo non supporta il GPS."; }
         }
 
-        // Funzione per salvare il ticket
         function salvaSegnalazione() {
             var categoria = document.getElementById("categoria").value;
             var descrizione = document.getElementById("descrizione").value;
             var gps = document.getElementById("risultato-gps").value;
             var contoTerzi = document.getElementById("conto-terzi").checked;
             
-            if (descrizione.trim() === "") {
-                alert("Per favore, descrivi brevemente il problema prima di inviare.");
-                return;
-            }
+            if (descrizione.trim() === "") { alert("Per favore, descrivi brevemente il problema prima di inviare."); return; }
 
             var nuovoTicket = {
-                id: Date.now(),
-                data: new Date().toLocaleDateString("it-IT"),
-                categoria: categoria,
-                descrizione: descrizione,
-                gps: gps,
-                contoTerzi: contoTerzi,
-                stato: "In attesa"
+                id: Date.now(), data: new Date().toLocaleDateString("it-IT"), categoria: categoria,
+                descrizione: descrizione, gps: gps, contoTerzi: contoTerzi, stato: "In attesa"
             };
 
             var database = JSON.parse(localStorage.getItem("segnalazioniComune")) || [];
