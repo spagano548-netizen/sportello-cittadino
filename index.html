@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sportello Cittadino - Home</title>
     
-    <!-- NUOVO: Queste due righe trasformano il sito in un'App installabile (PWA) -->
+    <!-- PWA: Rende il sito un'app installabile -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1006/1006674.png">
     
@@ -76,6 +76,7 @@
     </main>
 
     <script>
+        // Funzione per la dettatura vocale
         function avviaDettatura() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("Il tuo telefono o PC non supporta questa funzione. Prova a usare Chrome o Safari.");
@@ -99,6 +100,7 @@
             riconoscimento.start();
         }
 
+        // INNOVAZIONE 1: GPS Intelligente con traduzione dell'indirizzo
         function trovaPosizione() {
             var casellaRisultato = document.getElementById("risultato-gps");
             casellaRisultato.value = "Ricerca in corso... attendi.";
@@ -106,7 +108,27 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function(posizione) {
-                        casellaRisultato.value = "Lat: " + posizione.coords.latitude + ", Lon: " + posizione.coords.longitude;
+                        var lat = posizione.coords.latitude;
+                        var lon = posizione.coords.longitude;
+                        casellaRisultato.value = "Coordinate trovate, cerco la via esatta...";
+
+                        // Ci colleghiamo a un servizio di mappe gratuito per convertire le coordinate in via
+                        var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon;
+                        
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.display_name) {
+                                    // Mostriamo l'indirizzo reale!
+                                    casellaRisultato.value = data.display_name;
+                                } else {
+                                    casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon;
+                                }
+                            })
+                            .catch(errore => {
+                                // Se fallisce, mostriamo almeno i numeri
+                                casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon;
+                            });
                     }, 
                     function(errore) {
                         casellaRisultato.value = "Permesso negato o posizione non trovata.";
@@ -117,6 +139,7 @@
             }
         }
 
+        // Funzione per salvare il ticket
         function salvaSegnalazione() {
             var categoria = document.getElementById("categoria").value;
             var descrizione = document.getElementById("descrizione").value;
