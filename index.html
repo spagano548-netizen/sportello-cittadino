@@ -12,7 +12,7 @@
         /* Stili di base */
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #1a1a1a; margin: 0; padding: 0; font-size: 22px; transition: 0.3s; }
         header { background-color: #004080; color: #ffffff; padding: 20px; text-align: center; }
-        main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        main { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 100px; } /* Spazio extra in basso per l'assistente */
         
         .nav-menu { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 2px solid #ccc; }
         .btn-nav { background-color: #e9ecef; color: #004080; font-size: 22px; font-weight: bold; padding: 15px; text-align: center; text-decoration: none; border: 2px solid #004080; border-radius: 8px; display: block; }
@@ -25,9 +25,9 @@
         .btn-azione { background-color: #0056b3; color: white; font-size: 20px; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; }
         .btn-invia { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; padding: 20px; border: none; border-radius: 8px; width: 100%; margin-top: 30px; cursor: pointer; }
 
-        /* INNOVAZIONE 2: Stili per la Barra di Accessibilità */
-        .barra-accessibilita { background-color: #e0e0e0; padding: 10px; text-align: right; }
-        .btn-access { font-size: 18px; padding: 10px 15px; margin-left: 10px; cursor: pointer; border: 2px solid #333; border-radius: 5px; font-weight: bold; background-color: #fff; }
+        /* Barra di Accessibilità e Lingua */
+        .barra-accessibilita { background-color: #e0e0e0; padding: 10px; text-align: right; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+        .btn-access { font-size: 18px; padding: 10px 15px; cursor: pointer; border: 2px solid #333; border-radius: 5px; font-weight: bold; background-color: #fff; }
         
         /* Modalità Super Contrasto */
         .super-contrasto { background-color: #000000 !important; color: #ffff00 !important; }
@@ -38,31 +38,46 @@
         /* Modalità Testo Gigante */
         .testo-gigante { font-size: 28px !important; }
         .testo-gigante .btn-nav, .testo-gigante input, .testo-gigante select, .testo-gigante textarea, .testo-gigante .btn-access { font-size: 26px !important; }
+
+        /* Assistente Virtuale Fluttuante */
+        .assistente-box { position: fixed; bottom: 20px; right: 20px; text-align: right; z-index: 1000; }
+        .messaggio-bot { display: none; background: #ffffff; border: 3px solid #004080; padding: 15px; border-radius: 15px 15px 0px 15px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); max-width: 250px; font-size: 18px; color: #1a1a1a; text-align: left; }
+        .btn-bot { background-color: #004080; color: white; border: none; border-radius: 50%; width: 70px; height: 70px; font-size: 35px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
-    <!-- NUOVO: Barra degli strumenti per l'accessibilità -->
+    <!-- Barra Superiore con Lingua e Accessibilità -->
     <div class="barra-accessibilita">
+        <select id="selettore-lingua" class="btn-access" onchange="cambiaLingua()">
+            <option value="it">🇮🇹 ITA</option>
+            <option value="en">🇬🇧 ENG</option>
+            <option value="es">🇪🇸 ESP</option>
+        </select>
         <button class="btn-access" onclick="attivaTestoGigante()">A+ Ingrandisci Testo</button>
         <button class="btn-access" onclick="attivaAltoContrasto()">🌓 Alto Contrasto</button>
     </div>
 
     <header>
-        <h1>Sportello Cittadino</h1>
-        <p>Il tuo Comune a portata di click</p>
+        <h1 id="testo-titolo">Sportello Cittadino</h1>
+        <p id="testo-sottotitolo">Il tuo Comune a portata di click</p>
     </header>
 
     <main>
         <div class="nav-menu">
             <a href="bacheca.html" class="btn-nav">📌 Bacheca, Avvisi e FAQ</a>
             <a href="miei-ticket.html" class="btn-nav">📋 Controlla le tue Segnalazioni</a>
-            <a href="dashboard.html" class="btn-nav" style="border-color: #d9534f; color: #ffff00;">🏢 Area Comune (Dashboard)</a>
+            <a href="dashboard.html" class="btn-nav" style="border-color: #d9534f; color: #d9534f;" id="btn-dash">🏢 Area Comune (Dashboard)</a>
         </div>
 
-        <h2>Invia una nuova segnalazione</h2>
+        <h2 id="testo-sezione">Invia una nuova segnalazione</h2>
         
         <div class="modulo-segnalazione">
+            
+            <!-- Memoria Intelligente: Il Nome -->
+            <label for="nome" id="lbl-nome">Il tuo nome (lo ricorderò in automatico):</label>
+            <input type="text" id="nome" placeholder="Es. Mario Rossi">
+
             <label for="categoria">1. Cosa vuoi segnalare?</label>
             <select id="categoria">
                 <option value="Strade">Buca in strada o marciapiede rovinato</option>
@@ -90,104 +105,125 @@
                 Sto inviando questa segnalazione per conto di una persona anziana o con disabilità.
             </label>
 
-            <button type="button" class="btn-invia" onclick="salvaSegnalazione()">Invia Segnalazione</button>
+            <button type="button" class="btn-invia" id="btn-invia" onclick="salvaSegnalazione()">Invia Segnalazione</button>
         </div>
     </main>
 
+    <!-- Assistente Virtuale Gentile -->
+    <div class="assistente-box">
+        <div class="messaggio-bot" id="messaggio-bot">
+            Ciao! Posso aiutarti? Seleziona una categoria e scrivi il problema. Se fai fatica a digitare, premi il pulsante giallo col microfono e parlami!
+        </div>
+        <button class="btn-bot" onclick="mostraAssistente()">🤖</button>
+    </div>
+
     <script>
-        // Funzioni per l'accessibilità
-        function attivaTestoGigante() {
-            document.body.classList.toggle('testo-gigante');
+        // CARICAMENTO MEMORIA INTELLIGENTE
+        // Appena la pagina si apre, controlla se c'è un nome salvato nel telefono
+        window.onload = function() {
+            var nomeSalvato = localStorage.getItem("nomeCittadinoMemoria");
+            if(nomeSalvato) {
+                document.getElementById("nome").value = nomeSalvato;
+            }
+        };
+
+        // ASSISTENTE VIRTUALE
+        function mostraAssistente() {
+            var box = document.getElementById("messaggio-bot");
+            if (box.style.display === "none" || box.style.display === "") {
+                box.style.display = "block";
+            } else {
+                box.style.display = "none";
+            }
         }
 
+        // TRADUTTORE MULTILINGUA BASE
+        var dizionario = {
+            "it": {
+                "titolo": "Sportello Cittadino", "sottotitolo": "Il tuo Comune a portata di click",
+                "sezione": "Invia una nuova segnalazione", "nome": "Il tuo nome (lo ricorderò in automatico):",
+                "btn_invia": "Invia Segnalazione"
+            },
+            "en": {
+                "titolo": "Citizen Portal", "sottotitolo": "Your City at a click",
+                "sezione": "Submit a new report", "nome": "Your name (I'll remember it):",
+                "btn_invia": "Submit Report"
+            },
+            "es": {
+                "titolo": "Portal Ciudadano", "sottotitolo": "Tu Ciudad a un clic",
+                "sezione": "Enviar un nuevo reporte", "nome": "Tu nombre (lo recordaré):",
+                "btn_invia": "Enviar Reporte"
+            }
+        };
+
+        function cambiaLingua() {
+            var linguaScelta = document.getElementById("selettore-lingua").value;
+            var testi = dizionario[linguaScelta];
+            
+            document.getElementById("testo-titolo").innerText = testi.titolo;
+            document.getElementById("testo-sottotitolo").innerText = testi.sottotitolo;
+            document.getElementById("testo-sezione").innerText = testi.sezione;
+            document.getElementById("lbl-nome").innerText = testi.nome;
+            document.getElementById("btn-invia").innerText = testi.btn_invia;
+        }
+
+        // Accessibilità
+        function attivaTestoGigante() { document.body.classList.toggle('testo-gigante'); }
         function attivaAltoContrasto() {
             document.body.classList.toggle('super-contrasto');
-            // Gestione speciale del riquadro anziani per farlo vedere bene col contrasto
             var box = document.getElementById("box-anziani");
-            if (document.body.classList.contains('super-contrasto')) {
-                box.style.backgroundColor = "#1a1a1a";
-            } else {
-                box.style.backgroundColor = "#e9ecef";
-            }
+            if (document.body.classList.contains('super-contrasto')) { box.style.backgroundColor = "#1a1a1a"; } 
+            else { box.style.backgroundColor = "#e9ecef"; }
+            var dash = document.getElementById("btn-dash");
+            if (document.body.classList.contains('super-contrasto')) { dash.style.color = "#ffff00"; } 
+            else { dash.style.color = "#d9534f"; }
         }
 
-        // Dettatura vocale
+        // Dettatura e GPS
         function avviaDettatura() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Il tuo dispositivo non supporta questa funzione.");
-                return;
-            }
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert("Dispositivo non supportato."); return; }
             var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            var riconoscimento = new SpeechRecognition();
-            riconoscimento.lang = 'it-IT';
-            
-            riconoscimento.onstart = function() { document.getElementById("descrizione").placeholder = "Ti sto ascoltando... Parla ora!"; };
-            riconoscimento.onresult = function(event) {
-                var testoVocale = event.results[0][0].transcript;
-                var areaTesto = document.getElementById("descrizione");
-                areaTesto.value += (areaTesto.value ? " " : "") + testoVocale;
-                areaTesto.placeholder = "Scrivi qui...";
-            };
-            riconoscimento.onerror = function(event) {
-                alert("Non ho sentito bene, puoi riprovare?");
-                document.getElementById("descrizione").placeholder = "Scrivi qui...";
-            };
+            var riconoscimento = new SpeechRecognition(); riconoscimento.lang = 'it-IT';
+            riconoscimento.onstart = function() { document.getElementById("descrizione").placeholder = "Ascolto in corso..."; };
+            riconoscimento.onresult = function(event) { document.getElementById("descrizione").value += (document.getElementById("descrizione").value ? " " : "") + event.results[0][0].transcript; document.getElementById("descrizione").placeholder = "Scrivi qui..."; };
+            riconoscimento.onerror = function() { alert("Non ho capito, riprova."); document.getElementById("descrizione").placeholder = "Scrivi qui..."; };
             riconoscimento.start();
         }
 
-        // GPS Intelligente con traduzione dell'indirizzo
         function trovaPosizione() {
-            var casellaRisultato = document.getElementById("risultato-gps");
-            casellaRisultato.value = "Ricerca in corso... attendi.";
-
+            var casella = document.getElementById("risultato-gps"); casella.value = "Ricerca...";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    function(posizione) {
-                        var lat = posizione.coords.latitude;
-                        var lon = posizione.coords.longitude;
-                        casellaRisultato.value = "Coordinate trovate, cerco la via esatta...";
-
-                        var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon;
-                        
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data && data.display_name) {
-                                    casellaRisultato.value = data.display_name;
-                                } else {
-                                    casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon;
-                                }
-                            })
-                            .catch(errore => { casellaRisultato.value = "Lat: " + lat + ", Lon: " + lon; });
+                    function(pos) {
+                        var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + pos.coords.latitude + "&lon=" + pos.coords.longitude;
+                        fetch(url).then(r => r.json()).then(d => { casella.value = d.display_name ? d.display_name : "Lat: " + pos.coords.latitude + ", Lon: " + pos.coords.longitude; })
+                        .catch(() => { casella.value = "Lat: " + pos.coords.latitude + ", Lon: " + pos.coords.longitude; });
                     }, 
-                    function(errore) { casellaRisultato.value = "Permesso negato o posizione non trovata."; }
+                    function() { casella.value = "Posizione non trovata."; }
                 );
-            } else { casellaRisultato.value = "Il tuo dispositivo non supporta il GPS."; }
+            } else { casella.value = "GPS non supportato."; }
         }
 
+        // Salvataggio 
         function salvaSegnalazione() {
+            var nome = document.getElementById("nome").value;
             var categoria = document.getElementById("categoria").value;
             var descrizione = document.getElementById("descrizione").value;
             var gps = document.getElementById("risultato-gps").value;
             var contoTerzi = document.getElementById("conto-terzi").checked;
             
-            if (descrizione.trim() === "") { alert("Per favore, descrivi brevemente il problema prima di inviare."); return; }
+            if (descrizione.trim() === "") { alert("Descrivi il problema prima di inviare."); return; }
 
-            var nuovoTicket = {
-                id: Date.now(), data: new Date().toLocaleDateString("it-IT"), categoria: categoria,
-                descrizione: descrizione, gps: gps, contoTerzi: contoTerzi, stato: "In attesa"
-            };
+            // Salva il nome nella memoria del telefono
+            localStorage.setItem("nomeCittadinoMemoria", nome);
 
+            var nuovoTicket = { id: Date.now(), data: new Date().toLocaleDateString("it-IT"), nome: nome, categoria: categoria, descrizione: descrizione, gps: gps, contoTerzi: contoTerzi, stato: "In attesa" };
             var database = JSON.parse(localStorage.getItem("segnalazioniComune")) || [];
             database.push(nuovoTicket);
             localStorage.setItem("segnalazioniComune", JSON.stringify(database));
 
-            alert("✅ Segnalazione inviata con successo! Grazie per aver aiutato il tuo Comune.");
-            
-            document.getElementById("descrizione").value = "";
-            document.getElementById("risultato-gps").value = "";
-            document.getElementById("foto").value = "";
-            document.getElementById("conto-terzi").checked = false;
+            alert("✅ Segnalazione inviata con successo!");
+            document.getElementById("descrizione").value = ""; document.getElementById("risultato-gps").value = ""; document.getElementById("foto").value = ""; document.getElementById("conto-terzi").checked = false;
         }
     </script>
 </body>
