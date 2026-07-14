@@ -1,0 +1,16 @@
+{
+  "name": "Sportello Cittadino",
+  "short_name": "Sportello",
+  "description": "Il portale ultra-accessibile per le segnalazioni al tuo Comune.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f4f9",
+  "theme_color": "#004080",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1006/1006674.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
